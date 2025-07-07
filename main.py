@@ -1,7 +1,7 @@
 # Demo Code for Paper:
-# [Title]  - "Robust and Accurate Hand Gesture Authentication with Cross-Modality Local-Global Behavior Analysis"
-# [Author] -Yufeng Zhang, Wenxiong Kang, Wenwei Song
-# [Github] - https://github.com/SCUT-BIP-Lab/CMLG-Net.git
+# [Title]  - "Enhancing Perceptron Constancy for Real world Dynamic Hand Gesture Authentication"
+# [Author] -Yufeng Zhang, Xilai Wang, Wenxiong Kang, Wenwei Song
+# [Github] - https://github.com/SCUT-BIP-Lab/SSAF.git
 
 import torch
 from model.AMNet import Model_AMNet
@@ -11,7 +11,7 @@ def feedforward_demo(model, out_dim, is_train=False):
 
     if is_train:
         # Using AMSoftmax loss function
-        # there are 143 identities in the training set of the SCUT-DHGA dataset
+        # There are 143 identities in the training set of the SCUT-DHGA dataset
         criterian_a = AMSoftmax(in_feats=out_dim, n_classes=143)
         criterian_m = AMSoftmax(in_feats=out_dim, n_classes=143)
         criterian_f = AMSoftmax(in_feats=out_dim * 2, n_classes=143)
