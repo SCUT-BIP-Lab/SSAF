@@ -1,6 +1,6 @@
 # Demo Code for Paper:
 # [Title]  - "Enhancing Perceptron Constancy for Real world Dynamic Hand Gesture Authentication"
-# [Author] -Yufeng Zhang, Xilai Wang, Wenxiong Kang, Wenwei Song
+# [Author] -Yufeng Zhang, Xilai Wang, Wenwei Song, Wenxiong Kang
 # [Github] - https://github.com/SCUT-BIP-Lab/SSAF.git
 
 import torch
