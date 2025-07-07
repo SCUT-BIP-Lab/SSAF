@@ -14,7 +14,7 @@ from AGCN import TCN_GCN_unit
 
 
 class PositionalEncoding(nn.Module):
-    def __init__(self, d_hid, n_position=20):
+    def __init__(self, d_hid, n_position=49):
         super(PositionalEncoding, self).__init__()
         self.register_buffer('pos_table', self._get_sinusoid_encoding_table(n_position, d_hid))
 
@@ -232,4 +232,4 @@ class Model_AMNet(torch.nn.Module):
         x_m_norm_cat = x_m_norm_d * weight_sqrt[:, 1:]
         id_feature = torch.cat((x_a_norm_cat, x_m_norm_cat), dim=1)
 
-        return id_feature
+        return id_feature, x_a_norm, x_m_norm
