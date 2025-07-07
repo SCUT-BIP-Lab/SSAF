@@ -31,23 +31,3 @@ class AMSoftmax(nn.Module):
         costh_m_s = self.s * costh_m
         loss = self.ce(costh_m_s, lb)
         return loss, costh
-
-
-class Softmax(nn.Module):
-    def __init__(self,
-                 in_feats,
-                 n_classes,
-                ):
-        super(Softmax, self).__init__()
-        self.in_feats = in_feats
-        self.W = torch.nn.Parameter(torch.randn(in_feats, n_classes), requires_grad=True)
-        self.ce = nn.CrossEntropyLoss()
-        nn.init.xavier_normal_(self.W, gain=1)
-
-    def forward(self, x, lb):
-        assert x.size()[0] == lb.size()[0]
-        assert x.size()[1] == self.in_feats
-        logit = torch.mm(x, self.W)
-        loss = self.ce(logit, lb)
-        score = nn.functional.softmax(logit)
-        return loss, score
