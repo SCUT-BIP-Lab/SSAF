@@ -9,7 +9,7 @@ import shutil
 import json
 from scipy.signal import savgol_filter
 
-# SCUT-DHGA中的问题样本，可以选择跳过
+# Problem samples in the SCUT-DHGA dataset
 ill_list = [
     '1_1_0_2_6',
     '1_1_105_0_2',
@@ -37,7 +37,7 @@ ill_list = [
     '2_1_47_1_7',
     '2_2_19_0_1',
     '2_2_26_2_4',
-    # 上面是存在关键点缺失的样本，下面是关键点坐标超出图像边界的样本
+    # The samples above have missing keypoints, while the samples below have keypoint coordinates that exceed the image boundary
     '1_1_104_0_0',
     '1_1_104_0_1',
     '1_1_104_0_2',
@@ -150,28 +150,29 @@ ill_list = [
     '2_2_40_0_2',
     '2_2_9_0_6',
 ]
-# SCUT-RealDHGA中的问题样本，可以选择跳过
+# Problem samples in SCUT-RealDHGA
 ill_list_real = [
     '1_1_12_2_2',
 ]
 
+# Euclidean distance function
 euclid_distance = lambda x, y: np.sqrt(np.sum((x - y) ** 2))
 
 def vis_pose(kpt: np.ndarray, img=None, save_name=None):
     '''
-    Input:
-    :param kpt: keypoint array with shape [21,2]
-    :param img: image
-    :param save_name: wether save the picture
-    :param show: wether show the plt figure
-    :return:
+    Visualize hand keypoints on an image.
+
+    Args:
+        kpt: Keypoint array with shape [21, 2]
+        img: Image array (optional)
+        save_name: File path to save the visualization (optional)
     '''
     color_lst = ["yellow", "blue", "green", "cyan", "magenta"]
     group_lst = [1, 5, 9, 13, 17, 21]
     plt.figure()
     if img is not None:
-        if np.max(img)<1:
-            plt.imshow(img*255)
+        if np.max(img) < 1:
+            plt.imshow(img * 255)
         else:
             plt.imshow(img)
     for j, color in enumerate(color_lst):
@@ -188,7 +189,16 @@ def vis_pose(kpt: np.ndarray, img=None, save_name=None):
     plt.show()
 
 class BILASnorm:
+    """Background, Illumination, Location, Angle, Scale normalization (BILASnorm)."""
+    
     def __init__(self, video_dir, mask_dir, kpt_dir, save_dir=None):
+        """
+        Args:
+            video_dir: Directory containing raw RGB videos.
+            mask_dir: Directory containing hand segmentation masks.
+            kpt_dir: Directory containing keypoint JSON files.
+            save_dir: Directory to save normalized outputs.
+        """
         self.video_dir = video_dir
         self.mask_dir = mask_dir
         self.kpt_dir = kpt_dir
@@ -197,21 +207,39 @@ class BILASnorm:
         self.video_list.sort()
 
     def get_img(self, video_dir, video, image, transfer=False):
-        '''
-        rewrite this function according to your situation
-        if you need to replace the suffix from jpg to png, set the transfer as True
-        '''
+        """
+        Load and preprocess an image frame.
+        Override this method according to your data format.
+
+        Args:
+            video_dir: Root directory of videos.
+            video: Video name.
+            image: Image file name.
+            transfer: If True, replace '.jpg' suffix with '.png'.
+
+        Returns:
+            RGB image array resized to (200,200).
+        """
         image = image.replace('jpg', 'png') if transfer else image
         img_path = os.path.join(os.path.join(video_dir, video), image)
-        # img = np.array(Image.open(img_path).convert('RGB'))
         img = cv2.imread(img_path)
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         img = cv2.resize(img, (200, 200))
-        # img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         return img
 
     def get_kpt(self, video, image, max=None):
-        # rewrite this function according to your data
+        """
+        Retrieve keypoints for a specific frame.
+        Override according to your keypoint storage format.
+
+        Args:
+            video: Video name.
+            image: Image frame name.
+            max: Scaling factor (e.g., original resolution / 200).
+
+        Returns:
+            Array of shape (21,2).
+        """
         kpt_path = os.path.join(self.kpt_dir, video + '.json')
         with open(kpt_path) as f:
             data = json.load(f)
@@ -222,12 +250,14 @@ class BILASnorm:
         return kpt
 
     def get_kpt_stru(self, video):
+        """Load the full keypoint JSON structure for a video."""
         kpt_path = os.path.join(self.kpt_dir, video + '.json')
         with open(kpt_path) as f:
             data = json.load(f)
         return data
-    
+
     def background_norm(self, img, mask, show=False, save=False, video_name=None, image_name=None):
+        """Remove background using hand segmentation mask."""
         if np.max(mask) > 1:
             mask[mask <= 200] = 0
             mask[mask > 200] = 1
@@ -247,13 +277,14 @@ class BILASnorm:
             imageio.imwrite(os.path.join(save_dir, self.image_name), bg_norm)
         return bg_norm
 
-    def illumination_norm(self, img, mask, target_brightness=120, show=False, save=False, video_name=None, image_name=None):       
+    def illumination_norm(self, img, mask, target_brightness=120, show=False, save=False, video_name=None, image_name=None):
+        """Normalize illumination of the hand region to a target brightness."""
         light_norm = img.copy()
         brightness = np.mean(light_norm[mask > 0])
         coe = target_brightness / brightness
         light_norm[mask > 0] = light_norm[mask > 0] * coe
         max_ = np.max(light_norm[mask > 0])
-        light_norm[light_norm > max_] = light_norm[light_norm > max_]  * 255 / max_
+        light_norm[light_norm > max_] = light_norm[light_norm > max_] * 255 / max_
         light_norm = light_norm.astype(np.uint8)
         if show:
             plt.imshow(light_norm)
@@ -266,13 +297,15 @@ class BILASnorm:
         return light_norm
 
     def location_norm(self, img, kpt, mask=None, show=False, save=False, video_name=None, image_name=None):
-        # 先平移，将根节点放在（100,190)
+        """
+        Translate the palm root keypoint to a fixed position (100,190) in a 200x200 canvas.
+        """
         root_coord = kpt[0, :]
         bias = root_coord - np.array((100, 190))
         M = np.float32([[1, 0, -bias[0]], [0, 1, -bias[1]]])
         shifted = cv2.warpAffine(img, M, (200, 200))
         if mask is not None:
-            shifted_mask = cv2.warpAffine(mask, M, (200, 200))*255
+            shifted_mask = cv2.warpAffine(mask, M, (200, 200)) * 255
         else:
             shifted_mask = None
         kpt_shifted = kpt - bias
@@ -286,14 +319,15 @@ class BILASnorm:
         return shifted, kpt_shifted, shifted_mask
 
     def angle_norm(self, img, kpt, mask=None, show=False, save=False, video_name=None, image_name=None):
-        # 根据中指与掌根连线的角度，将手掌摆正
+        """
+        Rotate the hand so that the line from palm root to middle finger base becomes vertical.
+        """
         root_coord = kpt[0, :]
         mid_coord = kpt[9, :]
         tan = (mid_coord[0] - root_coord[0]) / (root_coord[1] - mid_coord[1])
         inv = np.degrees(np.arctan(tan))
-        # 这里的第一个参数为旋转中心，第二个为旋转角度，第三个为旋转后的缩放因子,可以通过设置旋转中心，缩放因子以及窗口大小来防止旋转后超出边界的问题
         M = cv2.getRotationMatrix2D((int(root_coord[0]), int(root_coord[1])), inv, 1)
-        rotated = cv2.warpAffine(img, M, (200, 200), borderValue=(0, 0, 0))  # M为上面的旋转矩阵, borderValue为空白区域的填充色
+        rotated = cv2.warpAffine(img, M, (200, 200), borderValue=(0, 0, 0))
         if mask is not None:
             rotated_mask = cv2.warpAffine(mask, M, (200, 200), borderValue=(0, 0, 0))
         else:
@@ -311,8 +345,10 @@ class BILASnorm:
         return rotated, kpt_rotated, rotated_mask
 
     def scale_norm(self, img, kpt, mask=None, show=False, save=False, video_name=None, image_name=None):
-        # 将中指指根与掌根的连线长度归一化为统一大小
-        sta = 80.0  # 手掌长度的标准大小
+        """
+        Normalize palm length (root to middle finger base) to a standard size.
+        """
+        sta = 80.0  # Standard palm length
         root_coord = kpt[0, :]
         mid_coord = kpt[9, :]
         palm_len = euclid_distance(root_coord, mid_coord)
@@ -348,30 +384,34 @@ class BILASnorm:
             vis_pose(kpt_scaled, scaled_final)
         if save:
             save_dir = os.path.join(os.path.join(self.save_dir, 'scale_norm'), self.video_name)
-            mask_save_dir = os.path.join(os.path.join(self.save_dir, 'mask_norm'), self.video_name)
             if not os.path.isdir(save_dir):
                 os.makedirs(save_dir)
             imageio.imwrite(os.path.join(save_dir, self.image_name), scaled_final)
-            # if not os.path.isdir(mask_save_dir):
-            #     os.makedirs(mask_save_dir)
-            # imageio.imwrite(os.path.join(mask_save_dir, self.image_name), mask_final)
         return scaled_final, kpt_scaled, mask_final
-        
+
     def BILASnorm(self, img, mask, kpt):
+        """Apply all five normalization steps in sequence."""
         bg_norm = self.background_norm(img, mask, save=False, show=False)
         light_norm = self.illumination_norm(bg_norm, mask, save=False, show=False)
         loc_norm, kpt_norm, mask_norm = self.location_norm(light_norm, kpt, mask, save=False, show=False)
         ang_norm, kpt_norm, mask_norm = self.angle_norm(loc_norm, kpt_norm, mask_norm, save=False, show=False)
         sca_norm, kpt_norm, mask_norm = self.scale_norm(ang_norm, kpt_norm, mask_norm, save=False, show=False)
         return sca_norm, kpt_norm
-        # return
 
     def process(self, video_list=None, start=0):
-        if video_list == None:
+        """
+        Run BILASnorm on all videos (or a subset).
+
+        Args:
+            video_list: List of video names to process. If None, process all.
+            start: Starting index or video name string.
+        """
+        if video_list is None:
             video_list = self.video_list
         if isinstance(start, str):
             start = np.where(np.array(video_list) == start)[0][0]
         for video in video_list[start:]:
+            # Skip known problematic samples if needed (uncomment to use)
             # if video in ill_list:
             #     continue
             print(video)
@@ -392,7 +432,7 @@ class BILASnorm:
                     ill_list_real.append(video)
                     continue
                 kpt = self.get_kpt(video, im_name, max=480)
-                # BILASnorm
+                # Apply full normalization pipeline
                 sca_norm, kpt_norm = self.BILASnorm(img, mask, kpt)
                 save_dir = os.path.join(os.path.join(self.save_dir, 'color_norm2'), self.video_name)
                 if not os.path.isdir(save_dir):
@@ -400,17 +440,18 @@ class BILASnorm:
                 imageio.imwrite(os.path.join(save_dir, self.image_name), sca_norm)
                 kpt_dict['info'][im_name]['keypoints'] = kpt_norm.tolist()
             kpt_dict['maker'] = 'Real-DHGA'
-            kpt_save_path = os.path.join(os.path.join(self.save_dir, 'keypoints_v1_norm'), video+'.json')
+            kpt_save_path = os.path.join(os.path.join(self.save_dir, 'keypoints_v1_norm'), video + '.json')
             with open(kpt_save_path, 'w') as file:
                 json.dump(kpt_dict, file)
 
 
 if __name__ == '__main__':
+    # Example usage: update these paths before running
     video_dir = 'your RGB data directory'
     depth_dir = 'your depth data directory'
     mask_dir = 'your mask data directory'
     kpt_dir = 'your keypoint data directory'
     save_dir = 'saving directory for standardized data'
     bilasNorm = BILASnorm(video_dir, mask_dir, kpt_dir, save_dir=save_dir)
-    img_norm = bilasNorm.process()  
+    img_norm = bilasNorm.process()
 
