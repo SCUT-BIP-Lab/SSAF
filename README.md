@@ -77,11 +77,11 @@ The SCUT-RealDHGA dataset can be downloaded from [SCUT-RealDHGA](https://github.
 
 ## Results
 
-### Accuracy and Efficiency Comparison on SCUT-DHGA (EER %)
+### Accuracy and Efficiency Comparison on SCUT-DHGA
 
 ![Exp_SD](docs/exp_sd.png)  
 
-### Cross-Dataset Generalization (RD dataset, MG EER %)
+### Few-shot Cross-Dataset Generalization on SCUT-RealDHGA
 
 ![Exp_RD](docs/exp_rd.png)  
 
