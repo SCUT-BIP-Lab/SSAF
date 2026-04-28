@@ -54,7 +54,7 @@ Standardizes 5 factors causing distribution shifts:
 - **Recoupling**: Cross-attention to inject appearance semantics into motion features
 - **Adaptive Fusion**: Learnable weighted fusion of both streams
 
-![AM-Net](docs/recoupling.png)  
+![Recoupling](docs/recoupling.png)  
 
 ---
 
@@ -62,7 +62,7 @@ Standardizes 5 factors causing distribution shifts:
 
 | Statistic | Value |
 |-----------|-------|
-| Subjects | 60 (age 18–54) |
+| Subjects | 60 |
 | Gesture types | 10 (9 defined + 1 random) |
 | Modalities | RGB + Depth |
 | Videos | 7,200 |
@@ -92,7 +92,6 @@ The SCUT-RealDHGA dataset can be downloaded from [SCUT-RealDHGA](https://github.
 ### Prerequisites
 - Python 3.8+
 - PyTorch 2.40+
-- NVIDIA GPU (RTX 3090 or equivalent)
 
 ### Installation
 
@@ -102,27 +101,38 @@ cd SSAF
 pip install -r requirements.txt
 ```
 
-### Quick Test
-Through debugging ([demo.py](/demo.py)), you can quickly understand the configuration and building method of "SSAF".
-```bash
-python demo.py
-```
+### Data Preparation
+1. Download datasets: SCUT-DHGA, SCUT-DHGA-br, SCUT-RealDHGA
+2. Organize as:
+data/
+├── SCUT-DHGA/
+│   ├── color_hand
+│   └── keypoint
+├── SCUT-DHGA-br/
+└── SCUT-RealDHGA/
+3. Normalize the data using GE-Stan and store it as
+data/
+├── SCUT-DHGA/
+│   ├── color_hand_norm
+│   └── keypoint_norm
+├── SCUT-DHGA-br/
+└── SCUT-RealDHGA/
 
 ### Training
 ```bash
 # Train SSAF on SCUT-DHGA under MG protocol
-python ./src/main/train.py --conf_file ./conf/SSAF/MG/MG_SD_amnet.conf --gpu 0 --mode train
+python ./src/main/train.py --conf_file ./conf/SSAF/MG/MG_SD_AMNet.conf --mode train
 ```
 
 ### Evaluation
 ```bash
-python ./src/main/train.py --conf_file ./conf/SSAF/MG/MG_SD_amnet.conf --gpu 0 --mode eval
+# Evaluate SSAF on SCUT-DHGA under UMG protocol
+python ./src/main/train.py --conf_file ./conf/SSAF/UMG/UMG1_SD_AMNet.conf --mode eval
 ```
 
 ### Citation
 If you find this work useful, please cite:
 
-```bash
 @ARTICLE{zhang2026ssaf,
   author={Zhang, Yufeng and Wang, Xilai and Song, Wenwei and Kang, Wenxiong},
   journal={IEEE Transactions on Information Forensics and Security}, 
@@ -133,7 +143,6 @@ If you find this work useful, please cite:
   pages={886-899},
   keywords={Authentication;Hands;Physiology;Accuracy;Skeleton;Videos;Robustness;Feature extraction;Standardization;Lighting;Biometrics;hand gesture authentication;preprocessing;skeleton-based;behavior analysis},
   doi={10.1109/TIFS.2025.3648567}}
-```
 
 ### Contact
 Zhang Yufeng

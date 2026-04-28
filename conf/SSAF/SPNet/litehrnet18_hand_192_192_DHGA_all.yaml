@@ -1,0 +1,108 @@
+WORKERS: 8
+PRINT_FREQ: 50
+DATASET:
+  DATASET: 'custom_coco'
+  TRAIN_FILE:
+    - '/home/wxl/code/Keypoint-Estimation-Python/dataset/HandPose-v1/train/train_anno.json'
+    - '/home/wxl/code/Keypoint-Estimation-Python/dataset/HandPose-v2/train/train_anno.json'
+    - '/home/wxl/code/Keypoint-Estimation-Python/dataset/HandPose-v3/train/train_anno.json'
+    - '/home/wxl/code/Keypoint-Estimation-Python/dataset/HandPose-vDHGA_all/train/train_anno.json'
+
+  TEST_FILE: '/home/wxl/code/Keypoint-Estimation-Python/dataset/HandPose-vDHGA_all/test/test_anno.json'
+  FLIP: true
+  ROT_FACTOR: 45
+  SCALE_FACTOR: 0.3
+  SCALE_RATE: 1.25
+  JOINT_IDS: [ ]
+  FLIP_PAIRS: [ ]
+  SKELETON: [ [ 0, 1 ], [ 1, 2 ], [ 2, 3 ], [ 3, 4 ], [ 0, 5 ], [ 5, 6 ], [ 6, 7 ], [ 7, 8 ],  [ 5, 9 ], [ 9, 10 ], [ 10, 11 ], [ 11, 12 ], [ 9, 13 ], [ 13, 14 ], [ 14, 15 ], [ 15, 16 ], [ 13, 17 ], [ 17, 18 ], [ 18, 19 ], [ 19, 20 ], [ 0, 17 ] ]
+
+MODEL:
+  NAME: 'LiteHRNet18'
+  OUT_TYPE: 'gaussian' # gaussian,offset
+  INIT_WEIGHTS: true
+  NUM_JOINTS: 21
+  PRETRAINED: ''
+  TARGET_TYPE: gaussian
+  IMAGE_SIZE: [ 192,192 ]
+  HEATMAP_SIZE: [ 48,48 ]
+  EXTRA:
+    SIGMA: 3
+    IN_CHANELS: 3
+    STEM:
+      STEM_CHANELS: 32
+      OUT_CHANELS: 32
+      EXPAND_RATIO: 1
+    STAGE0:
+      NUM_MODULES: 2
+      NUM_BRANCHES: 2
+      NUM_BLOCK: 2
+      MODULE_TYPE: LITE
+      WITH_FUSE: true
+      REDUCE_RATIO: 8
+      NUM_CHANNELS:
+        - 40
+        - 80
+    STAGE1:
+      NUM_MODULES: 4
+      NUM_BRANCHES: 3
+      NUM_BLOCK: 2
+      MODULE_TYPE: LITE
+      WITH_FUSE: true
+      REDUCE_RATIO: 8
+      NUM_CHANNELS:
+        - 40
+        - 80
+        - 160
+    STAGE2:
+      NUM_MODULES: 2
+      NUM_BRANCHES: 4
+      NUM_BLOCK: 2
+      MODULE_TYPE: LITE
+      WITH_FUSE: true
+      REDUCE_RATIO: 8
+      NUM_CHANNELS:
+        - 40
+        - 80
+        - 160
+        - 320
+    WITH_HEAD: true
+    NUM_DECONV_LAYERS: 0
+    FINAL_CONV_KERNEL: 1
+
+LOSS:
+  USE_TARGET_WEIGHT: true
+TRAIN:
+  BATCH_SIZE: 48
+  SHUFFLE: true
+  BEGIN_EPOCH: 0
+  END_EPOCH: 110
+  OPTIMIZER: adam
+  LR: 0.001
+  LR_FACTOR: 0.1
+  LR_STEP:
+    - 170
+    - 200
+  WD: 0.0001
+  GAMMA1: 0.99
+  GAMMA2: 0.0
+  MOMENTUM: 0.9
+  NESTEROV: false
+TEST:
+  BATCH_SIZE: 48
+  COCO_BBOX_FILE: 'data/coco/person_detection_results/COCO_val2017_detections_AP_H_56_person.json'
+  BBOX_THRE: 1.0
+  IMAGE_THRE: 0.0
+  IN_VIS_THRE: 0.2
+  NMS_THRE: 1.0
+  OKS_THRE: 0.9
+  USE_GT_BBOX: true
+  FLIP_TEST: true
+  POST_PROCESS: true
+  SHIFT_HEATMAP: true
+DEBUG:
+  DEBUG: true
+  SAVE_BATCH_IMAGES_GT: true
+  SAVE_BATCH_IMAGES_PRED: true
+  SAVE_HEATMAPS_GT: true
+  SAVE_HEATMAPS_PRED: true
