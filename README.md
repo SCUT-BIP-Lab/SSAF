@@ -103,7 +103,7 @@ pip install -r requirements.txt
 ```
 
 ### Quick Test
-Through debugging ([main.py](/demo.py)), you can quickly understand the configuration and building method of "SSAF"
+Through debugging ([demo.py](/demo.py)), you can quickly understand the configuration and building method of "SSAF".
 ```bash
 python demo.py
 ```
