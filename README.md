@@ -7,7 +7,7 @@
 Official PyTorch implementation of **SSAF** (Skeleton-assistant Standardization and Authentication Framework), a novel framework for robust and efficient dynamic hand gesture authentication in real-world uncontrolled scenarios.
 
 > **Yufeng Zhang, Xilai Wang, Wenwei Song, and Wenxiong Kang**  
-> *IEEE Transactions on Information Forensics and Security (TIFS), 2025*
+> *IEEE Transactions on Information Forensics and Security (TIFS), 2026*
 
 ---
 
@@ -104,35 +104,43 @@ pip install -r requirements.txt
 ### Data Preparation
 1. Download datasets: SCUT-DHGA, SCUT-DHGA-br, SCUT-RealDHGA
 2. Organize as:
+```text
 data/
 ├── SCUT-DHGA/
 │   ├── color_hand
 │   └── keypoint
 ├── SCUT-DHGA-br/
 └── SCUT-RealDHGA/
-3. Normalize the data using GE-Stan and store it as
-data/
+```
+3. Normalize the data using GE‑Stan:
+```bash
+python src.utils/GE-Standardization.py
+```
+4. The normalized data will be stored as:
+```text
+data_norm/
 ├── SCUT-DHGA/
 │   ├── color_hand_norm
 │   └── keypoint_norm
 ├── SCUT-DHGA-br/
 └── SCUT-RealDHGA/
+```
 
 ### Training
 ```bash
 # Train SSAF on SCUT-DHGA under MG protocol
-python ./src/main/train.py --conf_file ./conf/SSAF/MG/MG_SD_AMNet.conf --mode train
+python ./train.py --conf_file ./conf/SSAF/MG/MG_SD_AMNet.conf --mode train
 ```
 
 ### Evaluation
 ```bash
 # Evaluate SSAF on SCUT-DHGA under UMG protocol
-python ./src/main/train.py --conf_file ./conf/SSAF/UMG/UMG1_SD_AMNet.conf --mode eval
+python ./train.py --conf_file ./conf/SSAF/UMG/UMG1_SD_AMNet.conf --mode eval
 ```
 
 ### Citation
 If you find this work useful, please cite:
-
+```text
 @ARTICLE{zhang2026ssaf,
   author={Zhang, Yufeng and Wang, Xilai and Song, Wenwei and Kang, Wenxiong},
   journal={IEEE Transactions on Information Forensics and Security}, 
@@ -143,28 +151,16 @@ If you find this work useful, please cite:
   pages={886-899},
   keywords={Authentication;Hands;Physiology;Accuracy;Skeleton;Videos;Robustness;Feature extraction;Standardization;Lighting;Biometrics;hand gesture authentication;preprocessing;skeleton-based;behavior analysis},
   doi={10.1109/TIFS.2025.3648567}}
+```
 
 ### Contact
-Zhang Yufeng
-Biometrics and Intelligence Perception Lab.  
+**Biometrics and Intelligence Perception Lab**  
 College of Automation Science and Engineering  
-South China University of Technology  
-Wushan RD.,Tianhe District,Guangzhou,P.R.China,510641  
-auyfzhang@mail.scut.edu.cn
+South China University of Technology, Guangzhou, China  
 
-Wang Xilai
-Biometrics and Intelligence Perception Lab.  
-College of Automation Science and Engineering  
-South China University of Technology  
-Wushan RD.,Tianhe District,Guangzhou,P.R.China,510641  
-auwangxilai@mail.scut.edu.cn
-
-Prof. Kang Wenxiong  
-Biometrics and Intelligence Perception Lab.  
-College of Automation Science and Engineering  
-South China University of Technology  
-Wushan RD.,Tianhe District,Guangzhou,P.R.China,510641  
-auwxkang@scut.edu.cn
+- **Yufeng Zhang**: auyfzhang@mail.scut.edu.cn  
+- **Xilai Wang**: auwangxilai@mail.scut.edu.cn  
+- **Wenxiong Kang**: auwxkang@scut.edu.cn
 
 ### License
 MIT License. See [LICENSE](https://github.com/SCUT-BIP-Lab/SSAF/blob/main/LICENSE) for details.
