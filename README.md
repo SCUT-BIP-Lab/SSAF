@@ -18,8 +18,7 @@ Dynamic hand gesture authentication (DHGA) combines physiological and behavioral
 - **GE-Stan**: A generic preprocessing module that standardizes background, illumination, palm position, angle, and scale.
 - **AM-Net**: A two-stream network decoupling appearance (physiological) and motion (behavioral) features, with an attention-based recoupling mechanism.
 
-![Framework](figs/overview.png)  
-*[图片: SSAF整体框架图 (Fig. 2 in paper)]*
+![Framework](docs/overview.png)  
 
 ---
 
@@ -46,8 +45,7 @@ Standardizes 5 factors causing distribution shifts:
 | Angle | Rotate to align center line |
 | Scale | Resize to fixed palm length |
 
-![GE-Stan](figs/ge_stan.png)  
-*[图片: GE-Stan处理流程示例 (Fig. 3 in paper)]*
+![GE-Stan](docs/ge_stan.png)  
 
 ### 2. AM-Net Architecture
 
@@ -56,8 +54,7 @@ Standardizes 5 factors causing distribution shifts:
 - **Recoupling**: Cross-attention to inject appearance semantics into motion features
 - **Adaptive Fusion**: Learnable weighted fusion of both streams
 
-![AM-Net](figs/recoupling.png)  
-*[图片: recoupling模块结构图 (Fig. 4 in paper)]*
+![AM-Net](docs/recoupling.png)  
 
 ---
 
@@ -72,10 +69,9 @@ Standardizes 5 factors causing distribution shifts:
 | Frames | 864,000 (30 fps, 4s each) |
 | Scenes | Dormitory, classroom, subway, public hall, etc. |
 
-![SCUT-RealDHGA](figs/scut_realdhga.png)  
-*[图片: SCUT-RealDHGA图示 (Fig. 5 in paper)]*
+![SCUT-RealDHGA](docs/realdhga.png)  
 
-The SCUT-RealDHGA dataset can be downloaded from [SCUT-RealDHGA]().
+The SCUT-RealDHGA dataset can be downloaded from [SCUT-RealDHGA](https://github.com/SCUT-BIP-Lab/SCUT-RealDHGA).
 
 ---
 
@@ -83,13 +79,11 @@ The SCUT-RealDHGA dataset can be downloaded from [SCUT-RealDHGA]().
 
 ### Accuracy and Efficiency Comparison on SCUT-DHGA (EER %)
 
-![Exp_SD](figs/exp_sd.png)  
-*[图片: SOTA comparison on SCUT-DHGA (Table IV in paper)]*
+![Exp_SD](docs/exp_sd.png)  
 
 ### Cross-Dataset Generalization (RD dataset, MG EER %)
 
-![Exp_RD](figs/exp_rd.png)  
-*[图片: SOTA comparison on SCUT-RealDHGA (Table VI in paper)]*
+![Exp_RD](docs/exp_rd.png)  
 
 ---
 
@@ -108,9 +102,27 @@ cd SSAF
 pip install -r requirements.txt
 ```
 
+### Quick Test
+Through debugging ([main.py](/demo.py)), you can quickly understand the configuration and building method of "SSAF"
+```bash
+python demo.py
+```
+
+### Training
+```bash
+# Train SSAF on SCUT-DHGA under MG protocol
+python ./src/main/train.py --conf_file ./conf/SSAF/MG/MG_SD_amnet.conf --gpu 0 --mode train
+```
+
+### Evaluation
+```bash
+python ./src/main/train.py --conf_file ./conf/SSAF/MG/MG_SD_amnet.conf --gpu 0 --mode eval
+```
+
 ### Citation
 If you find this work useful, please cite:
 
+```bash
 @ARTICLE{zhang2026ssaf,
   author={Zhang, Yufeng and Wang, Xilai and Song, Wenwei and Kang, Wenxiong},
   journal={IEEE Transactions on Information Forensics and Security}, 
@@ -121,10 +133,29 @@ If you find this work useful, please cite:
   pages={886-899},
   keywords={Authentication;Hands;Physiology;Accuracy;Skeleton;Videos;Robustness;Feature extraction;Standardization;Lighting;Biometrics;hand gesture authentication;preprocessing;skeleton-based;behavior analysis},
   doi={10.1109/TIFS.2025.3648567}}
+```
 
 ### Contact
-Yufeng Zhang: auyfzhang@mail.scut.edu.cn
-Wenxiong Kang: auwxkang@scut.edu.cn
+Zhang Yufeng
+Biometrics and Intelligence Perception Lab.  
+College of Automation Science and Engineering  
+South China University of Technology  
+Wushan RD.,Tianhe District,Guangzhou,P.R.China,510641  
+auyfzhang@mail.scut.edu.cn
+
+Wang Xilai
+Biometrics and Intelligence Perception Lab.  
+College of Automation Science and Engineering  
+South China University of Technology  
+Wushan RD.,Tianhe District,Guangzhou,P.R.China,510641  
+auwangxilai@mail.scut.edu.cn
+
+Prof. Kang Wenxiong  
+Biometrics and Intelligence Perception Lab.  
+College of Automation Science and Engineering  
+South China University of Technology  
+Wushan RD.,Tianhe District,Guangzhou,P.R.China,510641  
+auwxkang@scut.edu.cn
 
 ### License
-MIT License. See [LICENSE]() for details.
+MIT License. See [LICENSE](https://github.com/SCUT-BIP-Lab/SSAF/blob/main/LICENSE) for details.
