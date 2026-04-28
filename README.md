@@ -159,7 +159,6 @@ College of Automation Science and Engineering
 South China University of Technology, Guangzhou, China  
 
 - **Yufeng Zhang**: auyfzhang@mail.scut.edu.cn  
-- **Xilai Wang**: auwangxilai@mail.scut.edu.cn  
 - **Wenxiong Kang**: auwxkang@scut.edu.cn
 
 ### License
