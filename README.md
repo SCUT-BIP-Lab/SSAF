@@ -114,7 +114,7 @@ data/
 ```
 3. Normalize the data using GE‑Stan:
 ```bash
-python ./src/utils/GE-Standardization.py
+python ./src/utils/GE_Stan.py
 ```
 4. The normalized data will be stored as:
 ```text
