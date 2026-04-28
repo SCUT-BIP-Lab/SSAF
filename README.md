@@ -140,7 +140,7 @@ python ./train.py --conf_file ./conf/SSAF/UMG/UMG1_SD_AMNet.conf --mode eval
 
 ### Citation
 If you find this work useful, please cite:
-```bibtext
+```bibtex
 @ARTICLE{zhang2026ssaf,
   author={Zhang, Yufeng and Wang, Xilai and Song, Wenwei and Kang, Wenxiong},
   journal={IEEE Transactions on Information Forensics and Security}, 
